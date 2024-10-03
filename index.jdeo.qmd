@@ -1,0 +1,79 @@
+---
+title: "index"
+author: "joseedquen"
+format: html
+editor: visual
+---
+
+## diseños experimentales
+
+## DCA
+
+Dosis (4) de fertilizacion nitrogenada:
+
+- 0
+- 50
+- 100
+- 150
+
+```{r}
+
+# Instalar el paquete agricolae si no lo tienes
+install.packages("agricolae")
+
+# Cargar el paquete agricolae
+library(agricolae)
+
+# Definir los tratamientos (niveles de fertilización)
+fertilizacion <- c(0, 50, 100, 150)
+
+# Definir las repeticiones
+repeticiones <- 5
+
+# Crear el diseño completamente al azar
+dca <- design.crd(trt=fertilizacion, r=repeticiones, seed=123)
+
+# Ver el diseño generado
+print(dca)
+
+
+
+
+```
+
+## DBCA
+
+Factor 1 (dosis nitrogeno):0, 50, 100, 150
+Factor 2 (variedades de papa): chanchan y peruanita
+Bloques: 5
+
+
+
+```{r}
+
+dosis <- c(0, 50, 100, 150)
+variedad <- c("canchan", "peruanita")
+
+ds <- agricolae::design.ab()
+
+trt<-c(4,2) # factorial 4x2
+outdesign <-design.ab(trt =trt, r=5)
+
+
+str(outdesign)
+
+
+book<-outdesign$book
+book
+
+
+
+```
+```{r}
+
+
+
+
+
+
+
