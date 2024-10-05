@@ -3,6 +3,8 @@ title: "index"
 author: "joseedquen"
 format: html
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## diseños experimentales
@@ -11,10 +13,10 @@ editor: visual
 
 Dosis (4) de fertilizacion nitrogenada:
 
-- 0
-- 50
-- 100
-- 150
+-   0
+-   50
+-   100
+-   150
 
 ```{r}
 
@@ -43,14 +45,9 @@ print(dca)
 
 ## DBCA
 
-Factor 1 (dosis nitrogeno):0, 50, 100, 150
-Factor 2 (variedades de papa): chanchan y peruanita
-Bloques: 5
-
-
+Factor 1 (dosis nitrogeno):0, 50, 100, 150 Factor 2 (variedades de papa): chanchan y peruanita Bloques: 5
 
 ```{r}
-
 dosis <- c(0, 50, 100, 150)
 variedad <- c("canchan", "peruanita")
 
@@ -68,12 +65,88 @@ book
 
 
 
+
+# analisis de datos
 ```
+
 ```{r}
+library(tidyverse)
+library(googlesheets4)
+
+```
+
+##importar datos
+
+```{r}
+url<-"https://docs.google.com/spreadsheets/d/15r7ZwcZZHbEgltlF6gSFvCTFA-CFzVBWwg3mFlRyKPs/edit?gid=172957346#gid=172957346"
+
+gs<- as_sheets_id(url)
+
+fb<-range_read(gs,"fb")
 
 
+str(fb)
+```
+
+## modelo estadistico
+
+```{r}
+modelo<-aov(formula = lfa ~ riego + geno+ riego*geno+ block, data = fb)
+
+plot (modelo)
+anova(modelo)
+```
+
+##Comparacion de medias
+
+```{r}
+library(agricolae)
+
+mc<- agricolae::duncan.test(y = modelo
+                            , trt = c("riego", "geno"))
 
 
+mc
+
+str(mc)
 
 
+```
 
+```{r}
+library(emmeans)
+library(multcomp)
+library(tidyverse)
+
+mc <- emmeans(modelo, ~ riego/ geno) %>%
+  cld(letters = letters, revesed = T)
+
+
+mc
+```
+
+## grafico
+
+```{r}
+library(inti)
+
+plot_smr(data = mc
+         , type = "bar"
+         , x = "geno"
+         , y = "emmean"
+         , group = "riego"
+         , sig = ".group"
+         , error = "SE"
+         , ylimits = c(0,12000, 2000)
+         )
+           
+```
+
+```{r}
+ggplot(mc, aes(x = geno, y = emmean, fill = riego)) +
+  geom_bar(stat="identity") + 
+  the_minimal() +
+  labs(title = "grafico de barras", x = "categoria", y = "valores")
+
+
+```
